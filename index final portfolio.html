@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Uli Stechler — Software Engineer</title>
+<meta name="description" content="Portfolio of Avraham (Uli) Stechler — full-stack and backend engineer. Projects, resume, contact.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#05080a;
+  --bg-2:#080d11;
+  --line:rgba(90,150,160,.16);
+  --line-strong:rgba(120,230,225,.34);
+  --ink:#dfeaee;
+  --ink-dim:#8ba3ac;
+  --ink-faint:#5c757e;
+  --cyan:#3fe0d0;
+  --cyan-deep:#1ba9a4;
+  --amber:#f0a35e;
+  --pad:clamp(20px,5vw,64px);
+  --maxw:1120px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:"Space Grotesk",Inter,system-ui,-apple-system,Segoe UI,sans-serif;
+  font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+canvas#field{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.vignette{
+  position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:
+    radial-gradient(120% 80% at 50% 0%,rgba(5,8,10,0) 30%,rgba(5,8,10,.82) 100%),
+    linear-gradient(180deg,rgba(5,8,10,.5) 0%,rgba(5,8,10,.18) 20%,rgba(5,8,10,.62) 55%,rgba(5,8,10,.88) 100%);
+}
+.wrap{position:relative;z-index:2;max-width:var(--maxw);margin:0 auto;padding:0 var(--pad)}
+
+/* ---------- nav ---------- */
+nav{
+  position:sticky;top:0;z-index:20;
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  background:linear-gradient(180deg,rgba(5,8,10,.9),rgba(5,8,10,.55));
+  border-bottom:1px solid var(--line);
+}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;height:60px;gap:16px}
+.brand{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink)}
+.brand b{color:var(--cyan);font-weight:500}
+.navlinks{display:flex;gap:clamp(14px,3vw,30px);font-family:"JetBrains Mono",monospace;font-size:12.5px;letter-spacing:.08em}
+.navlinks a{color:var(--ink-dim);text-decoration:none;position:relative;padding:4px 0;transition:color .25s}
+.navlinks a::after{content:"";position:absolute;left:0;bottom:0;height:1px;width:0;background:var(--cyan);transition:width .3s ease}
+.navlinks a:hover{color:var(--ink)}
+.navlinks a:hover::after{width:100%}
+@media(max-width:560px){.navlinks a:nth-child(2){display:none}}
+
+/* ---------- hero ---------- */
+header.hero{padding:clamp(72px,15vh,150px) 0 clamp(60px,10vh,110px)}
+.kicker{
+  font-family:"JetBrains Mono",monospace;font-size:12px;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--cyan-deep);display:flex;align-items:center;gap:12px;margin-bottom:26px;
+}
+.kicker::before{content:"";width:34px;height:1px;background:var(--cyan-deep);display:block}
+h1{
+  margin:0;font-size:clamp(40px,8.2vw,88px);line-height:.98;font-weight:600;letter-spacing:-.03em;
+}
+h1 .dim{color:var(--ink-faint);font-weight:400}
+.tagline{
+  margin:26px 0 0;max-width:56ch;font-size:clamp(15.5px,1.9vw,19px);color:var(--ink-dim);line-height:1.65;
+}
+.tagline em{color:var(--ink);font-style:normal}
+.meta{
+  margin-top:30px;display:flex;flex-wrap:wrap;gap:10px 22px;
+  font-family:"JetBrains Mono",monospace;font-size:12px;letter-spacing:.06em;color:var(--ink-faint);
+}
+.meta span{display:flex;align-items:center;gap:8px}
+.dot{width:5px;height:5px;background:var(--cyan);border-radius:50%;box-shadow:0 0 8px var(--cyan)}
+.cta{display:flex;flex-wrap:wrap;gap:14px;margin-top:38px}
+.btn{
+  display:inline-flex;align-items:center;gap:10px;padding:13px 22px;
+  font-family:"JetBrains Mono",monospace;font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;
+  text-decoration:none;border:1px solid var(--line-strong);color:var(--ink);
+  background:rgba(10,20,22,.5);position:relative;overflow:hidden;transition:color .25s,border-color .25s,transform .25s;
+}
+.btn::before{content:"";position:absolute;inset:0;background:var(--cyan);transform:translateY(101%);transition:transform .32s cubic-bezier(.6,.05,.2,1);z-index:-1}
+.btn:hover{color:#04100f;border-color:var(--cyan);transform:translateY(-2px)}
+.btn:hover::before{transform:translateY(0)}
+.btn span{position:relative;z-index:1}
+.btn.ghost{border-color:var(--line);color:var(--ink-dim)}
+.btn.ghost:hover{color:#04100f}
+
+/* ---------- sections ---------- */
+section{padding:clamp(56px,9vh,96px) 0}
+.sec-head{display:flex;align-items:baseline;gap:18px;margin-bottom:38px;border-bottom:1px solid var(--line);padding-bottom:16px}
+.sec-num{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--cyan-deep);letter-spacing:.14em}
+h2{margin:0;font-size:clamp(22px,3.4vw,30px);font-weight:600;letter-spacing:-.01em}
+.sec-note{margin-left:auto;font-family:"JetBrains Mono",monospace;font-size:11.5px;color:var(--ink-faint);letter-spacing:.08em}
+@media(max-width:640px){.sec-note{display:none}}
+
+/* ---------- project cards ---------- */
+.projects{display:grid;gap:22px}
+.card{
+  position:relative;border:1px solid var(--line);background:linear-gradient(160deg,rgba(8,15,18,.94),rgba(5,9,11,.9));
+  padding:clamp(24px,3.4vw,38px);transition:border-color .35s,transform .35s,box-shadow .35s;
+  overflow:hidden;
+}
+.card::after{
+  content:"";position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--cyan),transparent);
+  opacity:0;transition:opacity .4s;
+}
+.card:hover{border-color:var(--line-strong);transform:translateY(-4px);box-shadow:0 24px 60px -30px rgba(63,224,208,.35)}
+.card:hover::after{opacity:1}
+.card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:20px}
+.card-idx{font-family:"JetBrains Mono",monospace;font-size:11.5px;color:var(--ink-faint);letter-spacing:.16em}
+h3{margin:12px 0 0;font-size:clamp(24px,3.6vw,34px);font-weight:600;letter-spacing:-.02em}
+h3 .sub{display:block;font-size:12px;font-family:"JetBrains Mono",monospace;color:var(--cyan-deep);letter-spacing:.16em;text-transform:uppercase;font-weight:400;margin-top:10px}
+.card p{color:var(--ink-dim);max-width:62ch;margin:18px 0 0;font-size:15.5px}
+.bullets{margin:20px 0 0;padding:0;list-style:none;display:grid;gap:9px}
+.bullets li{position:relative;padding-left:20px;font-size:14.5px;color:var(--ink-dim)}
+.bullets li::before{content:"";position:absolute;left:0;top:9px;width:7px;height:1px;background:var(--cyan-deep)}
+.bullets b{color:var(--ink);font-weight:500}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:24px}
+.chip{
+  font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.07em;color:var(--ink-dim);
+  border:1px solid var(--line);padding:5px 10px;background:rgba(63,224,208,.04);
+}
+.card-links{display:flex;flex-wrap:wrap;gap:12px;margin-top:26px}
+.mini{
+  font-family:"JetBrains Mono",monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;
+  text-decoration:none;color:var(--cyan);border-bottom:1px solid rgba(63,224,208,.3);padding-bottom:3px;
+  display:inline-flex;align-items:center;gap:8px;transition:gap .25s,border-color .25s;
+}
+.mini:hover{gap:13px;border-color:var(--cyan)}
+.mini.alt{color:var(--ink-dim);border-color:var(--line)}
+.mini.alt:hover{color:var(--ink)}
+.glyph{
+  position:absolute;right:-10px;top:-18px;font-family:"JetBrains Mono",monospace;
+  font-size:clamp(90px,15vw,150px);line-height:1;color:rgba(63,224,208,.045);
+  pointer-events:none;user-select:none;letter-spacing:-.04em;
+}
+
+/* ---------- stack / about ---------- */
+.grid2{display:grid;grid-template-columns:1fr;gap:34px}
+@media(min-width:860px){.grid2{grid-template-columns:1.05fr .95fr;gap:56px}}
+.about p{color:var(--ink-dim);margin:0 0 16px;max-width:60ch}
+.about p strong{color:var(--ink);font-weight:500}
+.stack-group{margin-bottom:22px}
+.stack-label{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--cyan-deep);margin-bottom:10px}
+.stack-list{font-family:"JetBrains Mono",monospace;font-size:13.5px;color:var(--ink-dim);line-height:1.9}
+.stack-list span{color:var(--ink)}
+.timeline{margin-top:4px;border-left:1px solid var(--line);padding-left:24px;display:grid;gap:26px}
+.tl-item{position:relative}
+.tl-item::before{content:"";position:absolute;left:-28px;top:8px;width:7px;height:7px;border:1px solid var(--cyan-deep);background:var(--bg);transform:rotate(45deg)}
+.tl-when{font-family:"JetBrains Mono",monospace;font-size:11.5px;color:var(--ink-faint);letter-spacing:.08em}
+.tl-role{font-size:17px;font-weight:600;margin:5px 0 2px}
+.tl-org{font-size:14px;color:var(--cyan-deep)}
+.tl-item p{margin:9px 0 0;font-size:14.5px;color:var(--ink-dim);max-width:52ch}
+
+/* ---------- contact ---------- */
+footer{border-top:1px solid var(--line);padding:clamp(56px,9vh,90px) 0 46px;position:relative;z-index:2}
+.contact-head{font-size:clamp(28px,5.4vw,52px);font-weight:600;letter-spacing:-.03em;margin:0 0 18px;line-height:1.02}
+.contact-head .dim{color:var(--ink-faint)}
+.contact-sub{color:var(--ink-dim);margin:0 0 34px;max-width:48ch}
+.contact-links{display:flex;flex-wrap:wrap;gap:12px 32px;margin-bottom:44px}
+.clink{
+  font-family:"JetBrains Mono",monospace;font-size:13.5px;color:var(--ink);text-decoration:none;
+  display:inline-flex;align-items:center;gap:10px;transition:color .25s;
+}
+.clink svg{width:15px;height:15px;stroke:var(--cyan-deep);fill:none;stroke-width:1.5;transition:stroke .25s}
+.clink:hover{color:var(--cyan)}
+.clink:hover svg{stroke:var(--cyan)}
+.colophon{
+  display:flex;flex-wrap:wrap;gap:8px 20px;justify-content:space-between;
+  font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--ink-faint);letter-spacing:.08em;
+  border-top:1px solid var(--line);padding-top:20px;
+}
+
+/* ---------- load transition ---------- */
+#boot{
+  position:fixed;inset:0;z-index:100;background:var(--bg);
+  display:flex;align-items:center;justify-content:center;flex-direction:column;gap:18px;
+}
+#boot .bootline{
+  font-family:"JetBrains Mono",monospace;font-size:clamp(13px,2.4vw,17px);letter-spacing:.22em;
+  color:var(--cyan);text-transform:uppercase;white-space:nowrap;
+}
+#boot .bar{width:min(240px,52vw);height:1px;background:rgba(63,224,208,.16);position:relative;overflow:hidden}
+#boot .bar i{position:absolute;inset:0;background:var(--cyan);transform-origin:left;transform:scaleX(0);transition:transform 1.05s cubic-bezier(.5,0,.2,1)}
+#boot.go .bar i{transform:scaleX(1)}
+#boot.done{transform:translateY(-100%);transition:transform .78s cubic-bezier(.76,0,.24,1)}
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .8s cubic-bezier(.2,.6,.2,1),transform .8s cubic-bezier(.2,.6,.2,1)}
+.reveal.in{opacity:1;transform:none}
+.no-js-fallback .reveal{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  #boot{display:none}
+  .reveal{opacity:1;transform:none;transition:none}
+  .btn::before{transition:none}
+}
+::selection{background:rgba(63,224,208,.25);color:#fff}
+a:focus-visible,.btn:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+</style>
+</head>
+<body>
+
+<canvas id="field" aria-hidden="true"></canvas>
+<div class="vignette" aria-hidden="true"></div>
+
+<div id="boot" aria-hidden="true">
+  <div class="bootline" id="bootText">ULI STECHLER</div>
+  <div class="bar"><i></i></div>
+</div>
+
+<nav>
+  <div class="wrap">
+    <div class="brand">ULI&nbsp;<b>STECHLER</b></div>
+    <div class="navlinks">
+      <a href="#work">work</a>
+      <a href="#about">about</a>
+      <a href="Uli_Stechler_Resume.pdf" target="_blank" rel="noopener">resume</a>
+      <a href="#contact">contact</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="kicker reveal">Software Engineer · New Jersey</div>
+    <h1 class="reveal">Avraham <span class="dim">Uli</span><br>Stechler</h1>
+    <p class="tagline reveal">I build <em>full-stack products, backend data systems, and game engines from scratch</em> — chess AI with alpha-beta search, payment infrastructure, commission pipelines deployed across a division.</p>
+    <div class="cta reveal">
+      <a class="btn" href="#work"><span>View Projects</span></a>
+      <a class="btn ghost" href="Uli_Stechler_Resume.pdf" target="_blank" rel="noopener"><span>Resume ↗</span></a>
+    </div>
+  </div>
+</header>
+
+<section id="work">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-num">01</span>
+      <h2>Selected Work</h2>
+      <span class="sec-note">live · no build step · source readable</span>
+    </div>
+
+    <div class="projects">
+
+      <article class="card reveal">
+        <div class="glyph">♟</div>
+        <div class="card-top"><span class="card-idx">PROJECT / 01</span></div>
+        <h3>Gambit Hall<span class="sub">Chess analysis &amp; coaching engine</span></h3>
+        <p>A full chess coach that runs entirely in the browser — no server, no account, no network calls. It evaluates positions, explains every recommendation in plain language, and teaches through a curriculum I wrote from scratch.</p>
+        <ul class="bullets">
+          <li><b>Alpha-beta search</b> with a custom tapered evaluation function</li>
+          <li><b>Rule-based explanation engine</b> — what a move attacks, defends and prevents, drawn as board arrows (no LLM involved)</li>
+          <li>PGN / FEN import, auto-analysis, move grading, configurable AI opponents</li>
+          <li>Progressive curriculum from beginner through ~2000 rating</li>
+        </ul>
+        <div class="chips"><span class="chip">JavaScript</span><span class="chip">Alpha-Beta Search</span><span class="chip">Game AI</span><span class="chip">Canvas</span><span class="chip">Client-side only</span></div>
+        <div class="card-links">
+          <a class="mini" href="https://ulie123.github.io/gambithall/" target="_blank" rel="noopener">Launch →</a>
+          <a class="mini alt" href="https://github.com/ulie123/gambithall" target="_blank" rel="noopener">Source →</a>
+        </div>
+      </article>
+
+      <article class="card reveal">
+        <div class="glyph">▶</div>
+        <div class="card-top"><span class="card-idx">PROJECT / 02</span></div>
+        <h3>The Arcade<span class="sub">Four classic games, ported &amp; rebuilt</span></h3>
+        <p>A browser arcade of four games. Three began life as Java Swing applications and were ported to vanilla JavaScript with their original logic intact; the fourth was built for the web from the start.</p>
+        <ul class="bullets">
+          <li><b>Fianchetto (chess)</b> — full legal move generation including castling, en passant and promotion, against a CPU tuned to roughly 800 ELO</li>
+          <li><b>Othello</b> — two opponents: a greedy heuristic and a minimax AI searching six moves deep</li>
+          <li><b>Tic-Tac-Toe</b> — three interchangeable interfaces (buttons, hand-painted canvas, text console) swappable mid-game</li>
+          <li><b>Pong</b> — solo and versus-CPU, with trajectory derived from paddle contact point</li>
+        </ul>
+        <div class="chips"><span class="chip">Vanilla JS</span><span class="chip">Java → JS port</span><span class="chip">Minimax</span><span class="chip">Canvas</span><span class="chip">No build tools</span></div>
+        <div class="card-links">
+          <a class="mini" href="https://ulie123.github.io/thearcade/" target="_blank" rel="noopener">Launch →</a>
+          <a class="mini alt" href="https://github.com/ulie123/thearcade" target="_blank" rel="noopener">Source →</a>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<section id="about">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-num">02</span>
+      <h2>Background</h2>
+    </div>
+
+    <div class="grid2">
+      <div class="about reveal">
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-when">JUN 2026 — AUG 2026</div>
+            <div class="tl-role">AI Data Engineer Intern</div>
+            <div class="tl-org">IDT / NRS — Newark, NJ</div>
+            <p>Built a full-stack member application in PHP, JavaScript and SQLite over a relational schema I designed. Created a commission data infrastructure from scratch and led the division-wide rollout and training. Built Zia AI agents that automate multi-step internal workflows.</p>
+          </div>
+          <div class="tl-item">
+            <div class="tl-when">JUN 2025 — AUG 2025</div>
+            <div class="tl-role">Software Engineering Intern</div>
+            <div class="tl-org">IDT / NRS — Newark, NJ</div>
+            <p>Built a payment backend with transaction storage on Cybersource and MongoDB, an internal knowledge chatbot with natural-language access to company documentation, React printer integrations for custom print jobs, and a Python scraper for sales-data analysis.</p>
+          </div>
+          <div class="tl-item">
+            <div class="tl-when">JUN 2023 — AUG 2023</div>
+            <div class="tl-role">Computer Science Intern</div>
+            <div class="tl-org">Dragin Technologies — Lawrence, NY</div>
+            <p>Worked alongside engineers in Python and SQL on Salesforce integrations, CRM data modeling and workflow customization, tracking work in Jira on an Agile team.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="reveal">
+        <div class="stack-group">
+          <div class="stack-label">Languages</div>
+          <div class="stack-list"><span>Java · Python · JavaScript</span> · C · C++ · PHP · HTML · CSS · SQL</div>
+        </div>
+        <div class="stack-group">
+          <div class="stack-label">Backend &amp; Data</div>
+          <div class="stack-list"><span>FastAPI · Node · MongoDB</span> · Postgres · MySQL · SQLite · Alembic · Uvicorn · Poetry</div>
+        </div>
+        <div class="stack-group">
+          <div class="stack-label">Frontend</div>
+          <div class="stack-list"><span>React</span> · Ajax · Canvas · vanilla JS</div>
+        </div>
+        <div class="stack-group">
+          <div class="stack-label">Tools</div>
+          <div class="stack-list">Linux · Git · Jira · Salesforce · Slack</div>
+        </div>
+        <div class="stack-group">
+          <div class="stack-label">Off the keyboard</div>
+          <div class="stack-list" style="line-height:1.75">Chess.com Ambassador · Chess Club President, Touro LCM · former teacher at Premier Chess · rated <span>1800–1900</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer id="contact">
+  <div class="wrap">
+    <h2 class="contact-head reveal">Let's build<br><span class="dim">something.</span></h2>
+    <p class="contact-sub reveal">Currently looking for software engineering roles. The fastest way to reach me is email.</p>
+    <div class="contact-links reveal">
+      <a class="clink" href="mailto:ustechler@gmail.com">
+        <svg viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="1.5"/><path d="M3 6.5l9 6.5 9-6.5"/></svg>
+        ustechler@gmail.com
+      </a>
+      <a class="clink" href="https://www.linkedin.com/in/avraham-uli-stechler-aa2132267/" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 10v7M7 7v.01M11.5 17v-4a2.5 2.5 0 015 0v4"/></svg>
+        LinkedIn
+      </a>
+      <a class="clink" href="Uli_Stechler_Resume.pdf" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24"><path d="M14 3H7a1.5 1.5 0 00-1.5 1.5v15A1.5 1.5 0 007 21h10a1.5 1.5 0 001.5-1.5V7.5z"/><path d="M14 3v4.5h4.5"/></svg>
+        Resume (PDF)
+      </a>
+    </div>
+    <div class="colophon">
+      <span>© <span id="yr">2026</span> Avraham (Uli) Stechler</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ---------------- binary field background ---------------- */
+(function(){
+  var c = document.getElementById('field'), ctx = c.getContext('2d');
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var dpr, W, H, cols = [], t = 0;
+
+  function makeCols(){
+    cols = [];
+    // three depth layers: far (small, dim, slow) -> near (large, bright, fast)
+    var layers = [
+      {size:11, alpha:.12, speed:.16, gap:15, blur:0},
+      {size:15, alpha:.22, speed:.30, gap:22, blur:0},
+      {size:21, alpha:.34, speed:.52, gap:34, blur:0}
+    ];
+    layers.forEach(function(L, li){
+      var n = Math.ceil(W / L.gap) + 2;
+      for (var i=0; i<n; i++){
+        var len = 8 + Math.floor(Math.random()*26);
+        var bits = [];
+        for (var b=0; b<len; b++) bits.push(Math.random() < .5 ? '0' : '1');
+        cols.push({
+          x: i*L.gap + (li*7 % L.gap),
+          y: Math.random()*H*1.6 - H*.3,
+          bits: bits,
+          size: L.size,
+          alpha: L.alpha,
+          speed: L.speed * (.7 + Math.random()*.7),
+          warm: Math.random() < .07,      // sparse amber accents
+          lineH: L.size * 1.32,
+          flick: Math.floor(Math.random()*bits.length)
+        });
+      }
+    });
+  }
+
+  function resize(){
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = window.innerWidth; H = window.innerHeight;
+    c.width = W*dpr; c.height = H*dpr;
+    c.style.width = W+'px'; c.style.height = H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    makeCols();
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    ctx.textBaseline = 'top';
+    for (var i=0; i<cols.length; i++){
+      var col = cols[i];
+      ctx.font = '500 ' + col.size + 'px "JetBrains Mono", ui-monospace, monospace';
+      var h = col.bits.length * col.lineH;
+      for (var j=0; j<col.bits.length; j++){
+        var y = col.y + j*col.lineH;
+        if (y < -30 || y > H+30) continue;
+        // head of the column is brightest, tail fades
+        var falloff = 1 - (j / col.bits.length) * .78;
+        var a = col.alpha * falloff;
+        if (j === col.flick) { a = Math.min(.95, col.alpha*2.6); }
+        ctx.fillStyle = col.warm
+          ? 'rgba(240,163,94,' + (a*.85).toFixed(3) + ')'
+          : 'rgba(80,225,212,' + a.toFixed(3) + ')';
+        ctx.fillText(col.bits[j], col.x, y);
+      }
+      col.y += col.speed;
+      if (col.y > H + 40){
+        col.y = -h - Math.random()*H*.5;
+        col.flick = Math.floor(Math.random()*col.bits.length);
+        col.warm = Math.random() < .07;
+      }
+    }
+    // occasional bit mutation, keeps it alive without churn
+    t++;
+    if (t % 6 === 0){
+      for (var k=0;k<5;k++){
+        var cc = cols[Math.floor(Math.random()*cols.length)];
+        if (cc) cc.bits[Math.floor(Math.random()*cc.bits.length)] = Math.random()<.5?'0':'1';
+      }
+    }
+    raf = requestAnimationFrame(draw);
+  }
+
+  var raf;
+  resize();
+  window.addEventListener('resize', function(){ cancelAnimationFrame(raf); resize(); if(!reduce) draw(); else drawOnce(); });
+  function drawOnce(){ ctx.clearRect(0,0,W,H); ctx.textBaseline='top';
+    cols.forEach(function(col){ ctx.font='500 '+col.size+'px "JetBrains Mono", monospace';
+      col.bits.forEach(function(b,j){ var y=col.y+j*col.lineH; if(y<-30||y>H+30)return;
+        var a=col.alpha*(1-(j/col.bits.length)*.78);
+        ctx.fillStyle = col.warm?'rgba(240,163,94,'+(a*.85)+')':'rgba(80,225,212,'+a+')';
+        ctx.fillText(b,col.x,y); }); }); }
+  if (reduce) drawOnce(); else draw();
+})();
+
+/* ---------------- load transition ---------------- */
+(function(){
+  var boot = document.getElementById('boot');
+  var txt  = document.getElementById('bootText');
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var final = 'ULI STECHLER';
+
+  function revealAll(){
+    var els = document.querySelectorAll('.reveal');
+    var io = new IntersectionObserver(function(ents){
+      ents.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
+    }, {threshold:.12, rootMargin:'0px 0px -8% 0px'});
+    els.forEach(function(el, i){
+      if (el.getBoundingClientRect().top < window.innerHeight){
+        setTimeout(function(){ el.classList.add('in'); }, i*95);
+      } else io.observe(el);
+    });
+  }
+
+  if (reduce){ if(boot) boot.remove(); revealAll(); document.getElementById('yr').textContent=new Date().getFullYear(); return; }
+
+  document.documentElement.style.overflow = 'hidden';
+  // decode the name out of binary noise
+  var chars = '01';
+  var frame = 0, total = 26;
+  var tick = setInterval(function(){
+    frame++;
+    var progress = frame/total;
+    var out = '';
+    for (var i=0;i<final.length;i++){
+      if (final[i] === ' ') { out += ' '; continue; }
+      out += (i/final.length < progress) ? final[i] : chars[Math.floor(Math.random()*2)];
+    }
+    txt.textContent = out;
+    if (frame >= total){ clearInterval(tick); txt.textContent = final; }
+  }, 42);
+
+  requestAnimationFrame(function(){ boot.classList.add('go'); });
+
+  window.addEventListener('load', function(){
+    setTimeout(function(){
+      boot.classList.add('done');
+      document.documentElement.style.overflow = '';
+      revealAll();
+      setTimeout(function(){ boot.remove(); }, 900);
+    }, 1250);
+  });
+  // safety: never trap the page if load stalls
+  setTimeout(function(){
+    if (document.body.contains(boot) && !boot.classList.contains('done')){
+      boot.classList.add('done'); document.documentElement.style.overflow=''; revealAll();
+      setTimeout(function(){ if(boot.parentNode) boot.remove(); }, 900);
+    }
+  }, 3400);
+
+  document.getElementById('yr').textContent = new Date().getFullYear();
+})();
+</script>
+</body>
+</html>
